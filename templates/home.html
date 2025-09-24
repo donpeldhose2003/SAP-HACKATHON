@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to AURA - Your Personal Event Concierge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .hero-container {
+            text-align: center;
+            max-width: 800px;
+            padding: 40px;
+        }
+        
+        .logo {
+            font-size: 4em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffeaa7, #fab1a0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        
+        .tagline {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .description {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            min-width: 150px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .features {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+        
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .feature p {
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-container {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 3em;
+            }
+            
+            .tagline {
+                font-size: 1.4em;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-container">
+        <div class="logo">🌟 AURA</div>
+        <div class="tagline">Your Personal Event Concierge</div>
+        <div class="description">
+            Experience events like never before with AI-powered personalization. 
+            AURA curates your perfect event journey in real-time, eliminating information overload 
+            and helping you discover what matters most.
+        </div>
+        
+        <div class="cta-buttons">
+            <a href="{% url 'chat:login' %}" class="btn btn-primary">Sign In</a>
+            <a href="{% url 'chat:register' %}" class="btn btn-secondary">Get Started</a>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <h3>Smart Recommendations</h3>
+                <p>AI-powered suggestions based on your interests and behavior</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Real-time Updates</h3>
+                <p>Live feed of personalized alerts and opportunities</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <h3>Personalized Journey</h3>
+                <p>Curated experience tailored to your goals and preferences</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">💬</div>
+                <h3>Conversational Interface</h3>
+                <p>Natural language interaction for seamless navigation</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

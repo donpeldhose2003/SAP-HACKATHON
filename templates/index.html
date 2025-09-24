@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA - Your Personal Event Concierge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            grid-gap: 20px;
+            height: 100vh;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .live-feed {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+        
+        .feed-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4facfe;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .feed-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .feed-item.high-priority {
+            border-left-color: #ff6b6b;
+            background: linear-gradient(135deg, #fff 0%, #ffe0e0 100%);
+        }
+        
+        .feed-item.medium-priority {
+            border-left-color: #ffa726;
+            background: linear-gradient(135deg, #fff 0%, #fff3e0 100%);
+        }
+        
+        .feed-item h3 {
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .feed-item p {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        
+        .feed-item .action-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .feed-item .action-btn:hover {
+            background: #357abd;
+        }
+        
+        .chat-panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .chat-header {
+            background: linear-gradient(45deg, #764ba2 0%, #667eea 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .chat-header h2 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+        
+        .chat-status {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.user {
+            text-align: right;
+        }
+        
+        .message.bot {
+            text-align: left;
+        }
+        
+        .message-content {
+            display: inline-block;
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        
+        .message.user .message-content {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .message.welcome .message-content {
+            background: linear-gradient(45deg, #ffeaa7 0%, #fab1a0 100%);
+            color: #2d3436;
+        }
+        
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        
+        .chat-input:focus {
+            border-color: #4facfe;
+        }
+        
+        .send-btn {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 10px 16px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9em;
+            z-index: 1000;
+        }
+        
+        .connection-status.connected {
+            background: #27ae60;
+        }
+        
+        .connection-status.disconnected {
+            background: #e74c3c;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 400px;
+                height: 100vh;
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="connection-status" id="connectionStatus">Connecting...</div>
+
+    <!-- Fixed top banner -->
+    <div style="width:100%;position:fixed;top:0;left:0;z-index:1002;background:linear-gradient(45deg,#4facfe 0%,#00f2fe 100%);color:white;text-align:center;padding:18px 0;font-size:2em;font-weight:500;box-shadow:0 2px 10px rgba(0,0,0,0.08);">
+        🌟 AURA <span style="font-size:0.7em;font-weight:400;">Your Personal Event Concierge</span>
+    </div>
+
+    <div class="container" style="padding-top:80px;">
+        <div class="main-content">
+            <div class="header" style="display:none;"></div>
+            <div class="live-feed" id="liveFeed">
+                <div class="loading">
+                    <p>Loading your personalized feed...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating bot icon -->
+    <div id="auraBotIcon" style="position:fixed;bottom:32px;right:32px;z-index:1003;cursor:pointer;width:64px;height:64px;background:linear-gradient(135deg,#764ba2 0%,#667eea 100%);border-radius:50%;box-shadow:0 4px 20px rgba(0,0,0,0.18);display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:2.2em;">🤖</span>
+    </div>
+
+    <!-- Popup chat window -->
+    <div id="auraChatPopup" style="display:none;position:fixed;bottom:110px;right:32px;width:340px;height:420px;z-index:1004;background:white;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.22);overflow:hidden;flex-direction:column;">
+        <div style="background:linear-gradient(45deg,#764ba2 0%,#667eea 100%);color:white;padding:16px 18px;font-size:1.2em;font-weight:400;display:flex;justify-content:space-between;align-items:center;">
+            <span>💬 Chat with AURA</span>
+            <button id="closeAuraChat" style="background:none;border:none;color:white;font-size:1.2em;cursor:pointer;">✖</button>
+        </div>
+        <div class="chat-messages" id="chatMessages" style="flex:1;padding:16px;overflow-y:auto;background:#f8f9fa;"></div>
+        <div class="typing-indicator" id="typingIndicator" style="display:none;padding:10px 16px;color:#666;font-style:italic;">AURA is typing...</div>
+        <div class="chat-input-container" style="padding:12px 16px;background:white;border-top:1px solid #e0e0e0;">
+            <div class="chat-input-wrapper" style="display:flex;gap:8px;">
+                <input type="text" id="messageInput" class="chat-input" placeholder="Ask me anything about the event..." maxlength="500" style="flex:1;padding:10px 14px;border:2px solid #e0e0e0;border-radius:20px;font-size:14px;outline:none;">
+                <button id="sendButton" class="send-btn" style="background:linear-gradient(45deg,#4facfe 0%,#00f2fe 100%);color:white;border:none;padding:10px 18px;border-radius:20px;cursor:pointer;font-weight:500;">Send</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        class AuraConcierge {
+            constructor() {
+                this.socket = null;
+                this.isConnected = false;
+                this.messageQueue = [];
+                this.initializeElements();
+                this.connectWebSocket();
+            }
+            initializeElements() {
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.chatMessages = document.getElementById('chatMessages');
+                this.liveFeed = document.getElementById('liveFeed');
+                this.connectionStatus = document.getElementById('connectionStatus');
+                this.typingIndicator = document.getElementById('typingIndicator');
+                // Popup controls
+                this.auraBotIcon = document.getElementById('auraBotIcon');
+                this.auraChatPopup = document.getElementById('auraChatPopup');
+                this.closeAuraChat = document.getElementById('closeAuraChat');
+
+                // Event listeners
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+                this.auraBotIcon.addEventListener('click', () => this.showPopup());
+                this.closeAuraChat.addEventListener('click', () => this.hidePopup());
+
+                // Auto-focus input only when popup is open
+                this.auraChatPopup.addEventListener('transitionend', () => {
+                    if (this.auraChatPopup.style.display !== 'none') {
+                        this.messageInput.focus();
+                    }
+                });
+            }
+            showPopup() {
+                this.auraChatPopup.style.display = 'flex';
+                setTimeout(() => this.messageInput.focus(), 200);
+            }
+            hidePopup() {
+                this.auraChatPopup.style.display = 'none';
+            }
+            connectWebSocket() {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${window.location.host}/ws/chat/`;
+                this.socket = new WebSocket(wsUrl);
+                this.socket.onopen = () => {
+                    this.isConnected = true;
+                    this.updateConnectionStatus('connected');
+                    this.processPendingMessages();
+                };
+                this.socket.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    this.handleMessage(data);
+                };
+                this.socket.onclose = () => {
+                    this.isConnected = false;
+                    this.updateConnectionStatus('disconnected');
+                    setTimeout(() => {
+                        if (!this.isConnected) {
+                            this.connectWebSocket();
+                        }
+                    }, 3000);
+                };
+                this.socket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    this.updateConnectionStatus('disconnected');
+                };
+            }
+            updateConnectionStatus(status) {
+                this.connectionStatus.className = `connection-status ${status}`;
+                this.connectionStatus.textContent = status === 'connected' ? 'Connected' : 'Disconnected';
+                if (status === 'connected') {
+                    setTimeout(() => {
+                        this.connectionStatus.style.display = 'none';
+                    }, 2000);
+                } else {
+                    this.connectionStatus.style.display = 'block';
+                }
+            }
+            sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message) return;
+                this.addMessage('user', message);
+                this.messageInput.value = '';
+                this.sendButton.disabled = true;
+                this.showTypingIndicator();
+                const messageData = {
+                    type: 'message',
+                    message: message
+                };
+                if (this.isConnected) {
+                    this.socket.send(JSON.stringify(messageData));
+                } else {
+                    this.messageQueue.push(messageData);
+                }
+            }
+            handleMessage(data) {
+                this.hideTypingIndicator();
+                this.sendButton.disabled = false;
+                switch (data.type) {
+                    case 'welcome':
+                        this.addMessage('welcome', data.message);
+                        if (data.live_feed) {
+                            this.updateLiveFeed(data.live_feed);
+                        }
+                        break;
+                    case 'bot_response':
+                        this.addMessage('bot', data.message);
+                        if (data.live_feed) {
+                            this.updateLiveFeed(data.live_feed);
+                        }
+                        break;
+                    case 'feed_update':
+                        this.updateLiveFeed(data.live_feed);
+                        break;
+                    case 'notification':
+                        this.showNotification(data.message, data.notification_type);
+                        break;
+                    case 'error':
+                        this.addMessage('bot', `Sorry, there was an error: ${data.message}`);
+                        break;
+                }
+            }
+            addMessage(type, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                messageContent.textContent = content;
+                messageDiv.appendChild(messageContent);
+                this.chatMessages.appendChild(messageDiv);
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+            updateLiveFeed(feedItems) {
+                this.liveFeed.innerHTML = '';
+                if (!feedItems || feedItems.length === 0) {
+                    this.liveFeed.innerHTML = `
+                        <div class="feed-item">
+                            <h3>🎉 Welcome to AURA!</h3>
+                            <p>Your personalized event feed will appear here. Chat with me to get started!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                feedItems.forEach(item => {
+                    const feedItemDiv = document.createElement('div');
+                    feedItemDiv.className = `feed-item ${item.priority}-priority`;
+                    feedItemDiv.innerHTML = `
+                        <h3>${item.title}</h3>
+                        <p>${item.content}</p>
+                        <button class="action-btn" onclick="auraConcierge.handleFeedAction('${item.action}', '${item.type}')">
+                            ${item.action}
+                        </button>
+                    `;
+                    this.liveFeed.appendChild(feedItemDiv);
+                });
+            }
+            handleFeedAction(action, itemType) {
+                const messageData = {
+                    type: 'action',
+                    action: action,
+                    item_type: itemType
+                };
+                if (this.isConnected) {
+                    this.socket.send(JSON.stringify(messageData));
+                } else {
+                    this.messageQueue.push(messageData);
+                }
+            }
+            showTypingIndicator() {
+                this.typingIndicator.style.display = 'block';
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+            hideTypingIndicator() {
+                this.typingIndicator.style.display = 'none';
+            }
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 70px;
+                    right: 20px;
+                    background: #4facfe;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                    z-index: 1001;
+                    animation: slideInRight 0.3s ease;
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+            processPendingMessages() {
+                while (this.messageQueue.length > 0) {
+                    const message = this.messageQueue.shift();
+                    this.socket.send(JSON.stringify(message));
+                }
+            }
+        }
+        const auraConcierge = new AuraConcierge();
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

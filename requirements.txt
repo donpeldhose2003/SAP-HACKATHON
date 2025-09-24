@@ -1,0 +1,12 @@
+# requirements.txt
+django
+djangorestframework
+channels
+channels-redis  # Recommended for production
+# AI & ML Libraries
+scikit-learn
+pandas
+sentence-transformers
+faiss-cpu  # For vector search
+
+
