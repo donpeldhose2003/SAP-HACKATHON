@@ -1,0 +1,187 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}Admin Dashboard - AURA{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard Overview</h1>
+    <p>Welcome to the AURA Administration Panel</p>
+</div>
+
+<!-- Key Metrics -->
+<div class="dashboard-grid">
+    <div class="dashboard-card">
+        <div class="card-header">
+            <div class="card-icon primary">
+                <i class="fas fa-users"></i>
+            </div>
+            <div>
+                <div class="card-title">Total Users</div>
+                <div class="card-value">{{ metrics.total_users }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-card success">
+        <div class="card-header">
+            <div class="card-icon success">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div>
+                <div class="card-title">Active Users Today</div>
+                <div class="card-value">{{ metrics.active_users_today }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="card-header">
+            <div class="card-icon primary">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div>
+                <div class="card-title">Total Events</div>
+                <div class="card-value">{{ metrics.total_events }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-card success">
+        <div class="card-header">
+            <div class="card-icon success">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div>
+                <div class="card-title">Active Events</div>
+                <div class="card-value">{{ metrics.active_events }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="card-header">
+            <div class="card-icon primary">
+                <i class="fas fa-comments"></i>
+            </div>
+            <div>
+                <div class="card-title">Chat Sessions</div>
+                <div class="card-value">{{ metrics.total_chat_sessions }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-card warning">
+        <div class="card-header">
+            <div class="card-icon warning">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div>
+                <div class="card-title">New Registrations (7 days)</div>
+                <div class="card-value">{{ metrics.recent_registrations }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status -->
+{% if maintenance_mode and maintenance_mode.is_active %}
+<div class="alert warning">
+    <i class="fas fa-exclamation-triangle"></i>
+    <strong>Maintenance Mode Active:</strong> {{ maintenance_mode.message }}
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="dashboard-card">
+        <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="{% url 'admin_panel:event_management' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create New Event
+            </a>
+            <a href="{% url 'admin_panel:user_management' %}" class="btn btn-primary">
+                <i class="fas fa-search"></i> Search Users
+            </a>
+            <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-primary">
+                <i class="fas fa-cog"></i> System Settings
+            </a>
+            <a href="{% url 'admin_panel:export_data' %}?type=users" class="btn btn-success">
+                <i class="fas fa-download"></i> Export User Data
+            </a>
+        </div>
+    </div>
+    
+    <div class="dashboard-card">
+        <h3 style="margin-bottom: 1rem;">Top Events</h3>
+        {% if top_events %}
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                {% for event in top_events %}
+                <div style="padding: 0.5rem; background: #f9fafb; border-radius: 4px;">
+                    <strong>{{ event.title }}</strong>
+                    <br>
+                    <small>{{ event.current_attendees }} attendees • {{ event.get_status_display }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No events available</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="table-container">
+    <div class="table-header">
+        <h3 class="table-title">Recent System Activity</h3>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Level</th>
+                <th>Message</th>
+                <th>Module</th>
+                <th>User</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in recent_logs %}
+            <tr>
+                <td>
+                    <span class="badge {% if log.level == 'ERROR' or log.level == 'CRITICAL' %}inactive{% elif log.level == 'WARNING' %}warning{% else %}active{% endif %}">
+                        {{ log.level }}
+                    </span>
+                </td>
+                <td>{{ log.message|truncatechars:80 }}</td>
+                <td>{{ log.module }}</td>
+                <td>{{ log.user.username|default:"System" }}</td>
+                <td>{{ log.timestamp|timesince }} ago</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: #666;">No recent activity</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if admin_profile %}
+<div class="dashboard-card">
+    <h3 style="margin-bottom: 1rem;">Admin Profile Information</h3>
+    <p><strong>Role:</strong> {{ admin_profile.get_role_display }}</p>
+    <p><strong>Department:</strong> {{ admin_profile.department|default:"Not specified" }}</p>
+    <p><strong>Last Admin Login:</strong> {{ admin_profile.last_login_admin|default:"First time" }}</p>
+    <p><strong>Phone:</strong> {{ admin_profile.phone_number|default:"Not provided" }}</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-refresh dashboard every 30 seconds
+setTimeout(function() {
+    location.reload();
+}, 30000);
+</script>
+{% endblock %}

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'events',
     'chat',
     'models',
+    'admin_panel',  # New admin panel app
     #other django apps
     'rest_framework',
     'channels',
@@ -239,6 +240,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
 }
+
+# Authentication settings
+LOGIN_URL = '/admin-panel/login/'
+LOGIN_REDIRECT_URL = '/admin-panel/'
+LOGOUT_REDIRECT_URL = '/admin-panel/login/'
 
 # Custom settings for AURA
 AURA_SETTINGS = {

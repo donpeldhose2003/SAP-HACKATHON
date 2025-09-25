@@ -19,6 +19,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin-panel/', include('admin_panel.urls')),  # Custom admin panel
     path('api/events/', include('events.urls')),
     path('api/attendees/', include('attendees.urls')), 
     path('', include('chat.urls')),  # Main chat interface
