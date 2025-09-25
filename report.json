@@ -1,0 +1,34 @@
+{
+  "period": "7 days",
+  "generated_at": "2025-09-24T13:19:56.969163+00:00",
+  "overview": {
+    "total_sessions": 3,
+    "active_sessions": 3,
+    "total_messages": 128,
+    "unique_users": 2,
+    "avg_session_duration_hours": 0.0
+  },
+  "message_breakdown": {
+    "bot": 61,
+    "user": 64,
+    "welcome": 3
+  },
+  "top_users": [
+    {
+      "user__username": "don",
+      "session_count": 110,
+      "message_count": 110
+    },
+    {
+      "user__username": "DONP",
+      "session_count": 18,
+      "message_count": 18
+    }
+  ],
+  "activity_patterns": {
+    "chat_disconnected": 101,
+    "user_message": 37,
+    "chat_connected": 31,
+    "feed_action": 28
+  }
+}

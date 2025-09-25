@@ -19,13 +19,12 @@
         }
         
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
+            width: 100%;
+            margin: 0;
             padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            grid-gap: 20px;
-            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 80px);
         }
         
         .main-content {
@@ -35,6 +34,9 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            flex: 1;
+            width: 100%;
+            height: 100%;
         }
         
         .header {
@@ -60,22 +62,52 @@
             padding: 20px;
             overflow-y: auto;
             background: #f8f9fa;
+            min-height: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-content: flex-start;
         }
         
         .feed-item {
             background: white;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 0;
             border-left: 4px solid #4facfe;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            flex: 1 1 calc(33.333% - 15px);
+            min-width: 300px;
+            max-width: 400px;
+            height: auto;
+        }
+        
+        .feed-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .feed-item:hover::before {
+            left: 100%;
         }
         
         .feed-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .feed-item:active {
+            transform: translateY(-2px) scale(1.01);
         }
         
         .feed-item.high-priority {
@@ -89,26 +121,31 @@
         }
         
         .feed-item h3 {
-            margin-bottom: 8px;
+            margin-bottom: 15px;
             color: #2c3e50;
-            font-size: 1.1em;
+            font-size: 1.2em;
+            font-weight: 600;
+            line-height: 1.3;
         }
         
         .feed-item p {
             color: #666;
-            line-height: 1.5;
-            margin-bottom: 10px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 1.02em;
         }
         
         .feed-item .action-btn {
             background: #4facfe;
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.95em;
+            font-weight: 500;
             cursor: pointer;
-            transition: background 0.2s ease;
+            transition: all 0.3s ease;
+            margin-top: 8px;
         }
         
         .feed-item .action-btn:hover {
@@ -278,16 +315,66 @@
             color: #666;
         }
         
+        /* Mobile devices */
         @media (max-width: 768px) {
             .container {
-                grid-template-columns: 1fr;
-                grid-template-rows: 1fr 400px;
-                height: 100vh;
                 padding: 10px;
+                height: calc(100vh - 80px);
+            }
+            
+            .live-feed {
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .feed-item {
+                flex: 1 1 100%;
+                min-width: unset;
+                max-width: none;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+        
+        /* Tablet devices */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .feed-item {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 280px;
+            }
+        }
+        
+        /* Desktop and larger screens */
+        @media (min-width: 1025px) {
+            .feed-item {
+                flex: 1 1 calc(33.333% - 15px);
+                min-width: 300px;
+                max-width: 380px;
             }
             
             .header h1 {
                 font-size: 2em;
+            }
+        }
+        
+        /* Mobile logout button styling - only for small screens */
+        @media (max-width: 768px) {
+            .top-banner .user-info {
+                font-size: 0.4em !important;
+                gap: 8px !important;
+                right: 10px !important;
+            }
+            
+            .top-banner .user-info span {
+                display: none;
+            }
+            
+            .top-banner .user-info a {
+                padding: 6px 12px !important;
+                font-size: 1.2em !important;
             }
         }
     </style>
@@ -297,16 +384,67 @@
     <div class="connection-status" id="connectionStatus">Connecting...</div>
 
     <!-- Fixed top banner -->
-    <div style="width:100%;position:fixed;top:0;left:0;z-index:1002;background:linear-gradient(45deg,#4facfe 0%,#00f2fe 100%);color:white;text-align:center;padding:18px 0;font-size:2em;font-weight:500;box-shadow:0 2px 10px rgba(0,0,0,0.08);">
+    <div class="top-banner" style="width:100%;position:fixed;top:0;left:0;z-index:1002;background:linear-gradient(45deg,#4facfe 0%,#00f2fe 100%);color:white;text-align:center;padding:18px 0;font-size:2em;font-weight:500;box-shadow:0 2px 10px rgba(0,0,0,0.08);position:relative;">
         🌟 AURA <span style="font-size:0.7em;font-weight:400;">Your Personal Event Concierge</span>
+        
+        <!-- User info and logout button -->
+        <div class="user-info" style="position:absolute;top:50%;right:20px;transform:translateY(-50%);display:flex;align-items:center;gap:15px;font-size:0.5em;font-weight:400;">
+            <span>Welcome, {{ user.first_name|default:user.username }}!</span>
+            <a href="{% url 'chat:logout' %}" style="background:rgba(255,255,255,0.2);color:white;text-decoration:none;padding:8px 16px;border-radius:20px;transition:background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                🚪 Logout
+            </a>
+        </div>
     </div>
 
     <div class="container" style="padding-top:80px;">
         <div class="main-content">
-            <div class="header" style="display:none;"></div>
             <div class="live-feed" id="liveFeed">
-                <div class="loading">
-                    <p>Loading your personalized feed...</p>
+                <div class="feed-item high-priority">
+                    <h3>🚀 AI & Machine Learning Summit 2025</h3>
+                    <p>Join industry leaders discussing the future of AI, ML applications, and emerging technologies. Keynote by leading tech innovators.<br><br>📅 Today | ⏰ 2:00 PM - 6:00 PM</p>
+                    <button class="action-btn" onclick="auraConcierge.handleFeedAction('Register Now', 'tech_conference', 'https://www.ai-ml-summit.com')">
+                        Register Now
+                    </button>
+                </div>
+                
+                <div class="feed-item high-priority">
+                    <h3>💡 Startup Pitch Competition</h3>
+                    <p>Watch innovative startups present their groundbreaking ideas to top VCs and angel investors. Network with entrepreneurs.<br><br>📅 Today | ⏰ 2:00 PM - 5:00 PM</p>
+                    <button class="action-btn" onclick="auraConcierge.handleFeedAction('View Startups', 'startup_pitch', 'https://www.startuppitch2025.com')">
+                        View Startups
+                    </button>
+                </div>
+                
+                <div class="feed-item medium-priority">
+                    <h3>⚡ Full-Stack Development Workshop</h3>
+                    <p>Hands-on workshop covering React, Node.js, and modern development practices. Build a complete web application.<br><br>📅 Tomorrow | ⏰ 9:00 AM - 12:00 PM</p>
+                    <button class="action-btn" onclick="auraConcierge.handleFeedAction('Join Workshop', 'developer_workshop', 'https://www.devworkshop.io')">
+                        Join Workshop
+                    </button>
+                </div>
+                
+                <div class="feed-item medium-priority">
+                    <h3>💼 Tech Career Fair 2025</h3>
+                    <p>Meet recruiters from top tech companies including Google, Microsoft, Apple, and emerging startups. Bring your resume!<br><br>📅 November 1, 2025 | ⏰ 10:00 AM - 6:00 PM</p>
+                    <button class="action-btn" onclick="auraConcierge.handleFeedAction('Find Jobs', 'career_fair', 'https://www.techcareers2025.com')">
+                        Find Jobs
+                    </button>
+                </div>
+                
+                <div class="feed-item medium-priority">
+                    <h3>🤝 Tech Networking Mixer</h3>
+                    <p>Connect with fellow developers, designers, and tech enthusiasts. Casual networking over coffee and snacks.<br><br>📅 October 20, 2025 | ⏰ 6:00 PM - 9:00 PM</p>
+                    <button class="action-btn" onclick="auraConcierge.handleFeedAction('RSVP Here', 'networking_event', 'https://www.technetworking.events')">
+                        RSVP Here
+                    </button>
+                </div>
+                
+                <div class="feed-item low-priority">
+                    <h3>💬 Chat with AURA</h3>
+                    <p>Need help finding the perfect event? Ask me about your interests, schedule, or get personalized recommendations!</p>
+                    <button class="action-btn" onclick="auraConcierge.showPopup()">
+                        Start Chatting
+                    </button>
                 </div>
             </div>
         </div>
@@ -340,8 +478,20 @@
                 this.socket = null;
                 this.isConnected = false;
                 this.messageQueue = [];
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 5;
+                this.reconnectDelay = 1000;
+                this.isTyping = false;
+                this.typingTimer = null;
+                this.lastMessageTime = 0;
+                this.feedUpdateInterval = null;
+                this.animationFrameId = null;
+                this.connectionTimeout = null;
+                
                 this.initializeElements();
+                this.initializeFallbackFeed();
                 this.connectWebSocket();
+                this.startPeriodicUpdates();
             }
             initializeElements() {
                 this.messageInput = document.getElementById('messageInput');
@@ -380,32 +530,77 @@
             hidePopup() {
                 this.auraChatPopup.style.display = 'none';
             }
+            
+            initializeFallbackFeed() {
+                // Don't overwrite the initial welcome message immediately
+                // Only show fallback if WebSocket fails to connect
+                this.connectionTimeout = setTimeout(() => {
+                    if (!this.isConnected) {
+                        console.log('WebSocket connection timeout, ensuring fallback feed is shown');
+                        this.updateLiveFeed([]);
+                    }
+                }, 3000); // 3 second timeout
+            }
+            
             connectWebSocket() {
                 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
                 const wsUrl = `${protocol}//${window.location.host}/ws/chat/`;
-                this.socket = new WebSocket(wsUrl);
-                this.socket.onopen = () => {
-                    this.isConnected = true;
-                    this.updateConnectionStatus('connected');
-                    this.processPendingMessages();
-                };
-                this.socket.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    this.handleMessage(data);
-                };
-                this.socket.onclose = () => {
-                    this.isConnected = false;
-                    this.updateConnectionStatus('disconnected');
-                    setTimeout(() => {
-                        if (!this.isConnected) {
-                            this.connectWebSocket();
+                
+                try {
+                    this.socket = new WebSocket(wsUrl);
+                    
+                    this.socket.onopen = () => {
+                        this.isConnected = true;
+                        this.reconnectAttempts = 0;
+                        this.reconnectDelay = 1000;
+                        this.updateConnectionStatus('connected');
+                        this.processPendingMessages();
+                        
+                        // Clear the connection timeout since we're connected
+                        if (this.connectionTimeout) {
+                            clearTimeout(this.connectionTimeout);
+                            this.connectionTimeout = null;
                         }
-                    }, 3000);
-                };
-                this.socket.onerror = (error) => {
-                    console.error('WebSocket error:', error);
+                        
+                        console.log('WebSocket connected successfully');
+                    };
+                    
+                    this.socket.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            this.handleMessage(data);
+                        } catch (error) {
+                            console.error('Error parsing WebSocket message:', error);
+                        }
+                    };
+                    
+                    this.socket.onclose = (event) => {
+                        this.isConnected = false;
+                        this.updateConnectionStatus('disconnected');
+                        console.log(`WebSocket closed: ${event.code} - ${event.reason}`);
+                        
+                        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                            this.reconnectAttempts++;
+                            const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000);
+                            console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
+                            
+                            setTimeout(() => {
+                                if (!this.isConnected) {
+                                    this.connectWebSocket();
+                                }
+                            }, delay);
+                        }
+                    };
+                    
+                    this.socket.onerror = (error) => {
+                        console.error('WebSocket error:', error);
+                        this.updateConnectionStatus('disconnected');
+                    };
+                    
+                } catch (error) {
+                    console.error('Failed to create WebSocket connection:', error);
                     this.updateConnectionStatus('disconnected');
-                };
+                }
             }
             updateConnectionStatus(status) {
                 this.connectionStatus.className = `connection-status ${status}`;
@@ -418,9 +613,17 @@
                     this.connectionStatus.style.display = 'block';
                 }
             }
-            sendMessage() {
-                const message = this.messageInput.value.trim();
-                if (!message) return;
+            sendMessage(defaultMessage = null) {
+                const message = defaultMessage || this.messageInput.value.trim();
+                if (!message) {
+                    // If called from "Start Chatting" button, open popup and send hello
+                    if (defaultMessage === null) {
+                        this.showPopup();
+                        return;
+                    }
+                    return;
+                }
+                
                 this.addMessage('user', message);
                 this.messageInput.value = '';
                 this.sendButton.disabled = true;
@@ -436,30 +639,65 @@
                 }
             }
             handleMessage(data) {
+                console.log('Received WebSocket message:', data);
                 this.hideTypingIndicator();
                 this.sendButton.disabled = false;
+                
+                // Add animation and sound feedback
+                if (data.type === 'bot_response' || data.type === 'welcome') {
+                    this.playNotificationSound();
+                }
+                
                 switch (data.type) {
                     case 'welcome':
-                        this.addMessage('welcome', data.message);
+                        console.log('Processing welcome message:', data.message);
+                        console.log('Live feed data:', data.live_feed);
+                        const welcomeMsg = this.addMessage('welcome', data.message);
+                        this.animateMessageEntry(welcomeMsg);
                         if (data.live_feed) {
+                            console.log('Updating live feed with data:', data.live_feed);
                             this.updateLiveFeed(data.live_feed);
+                        } else {
+                            console.log('No live feed data in welcome message, showing default');
+                            this.updateLiveFeed([]);
+                        }
+                        if (data.user_info) {
+                            this.updateUserInfo(data.user_info);
                         }
                         break;
+                        
                     case 'bot_response':
-                        this.addMessage('bot', data.message);
+                        const botMsg = this.addMessage('bot', data.message);
+                        this.animateMessageEntry(botMsg);
                         if (data.live_feed) {
                             this.updateLiveFeed(data.live_feed);
                         }
                         break;
+                        
                     case 'feed_update':
                         this.updateLiveFeed(data.live_feed);
                         break;
+                        
                     case 'notification':
                         this.showNotification(data.message, data.notification_type);
                         break;
+                        
                     case 'error':
-                        this.addMessage('bot', `Sorry, there was an error: ${data.message}`);
+                        const errorMsg = this.addMessage('error', `Sorry, there was an error: ${data.message}`);
+                        this.animateMessageEntry(errorMsg);
+                        this.showNotification('An error occurred. Please try again.', 'error');
                         break;
+                        
+                    case 'typing_indicator':
+                        if (data.is_typing) {
+                            this.showTypingIndicator();
+                        } else {
+                            this.hideTypingIndicator();
+                        }
+                        break;
+                        
+                    default:
+                        console.warn('Unknown message type:', data.type);
                 }
             }
             addMessage(type, content) {
@@ -473,39 +711,78 @@
                 this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
             }
             updateLiveFeed(feedItems) {
-                this.liveFeed.innerHTML = '';
+                // Only update if we have actual new feed items with content
                 if (!feedItems || feedItems.length === 0) {
-                    this.liveFeed.innerHTML = `
-                        <div class="feed-item">
-                            <h3>🎉 Welcome to AURA!</h3>
-                            <p>Your personalized event feed will appear here. Chat with me to get started!</p>
-                        </div>
-                    `;
+                    console.log('No feed items to update, keeping existing content');
                     return;
                 }
+                
+                // Check if we have meaningful feed data (not just empty array)
+                const hasValidItems = feedItems.some(item => item.title && item.content);
+                if (!hasValidItems) {
+                    console.log('No valid feed items, keeping existing content');
+                    return;
+                }
+                
+                console.log('Updating feed with new items:', feedItems);
+                // Clear and add new feed items
+                this.liveFeed.innerHTML = '';
                 feedItems.forEach(item => {
                     const feedItemDiv = document.createElement('div');
-                    feedItemDiv.className = `feed-item ${item.priority}-priority`;
+                    feedItemDiv.className = `feed-item ${item.priority || 'medium'}-priority`;
+                    
+                    // Create content with proper formatting
+                    const content = item.content || 'No description available';
+                    const formattedContent = content.replace(/\n/g, '<br>');
+                    
                     feedItemDiv.innerHTML = `
-                        <h3>${item.title}</h3>
-                        <p>${item.content}</p>
-                        <button class="action-btn" onclick="auraConcierge.handleFeedAction('${item.action}', '${item.type}')">
-                            ${item.action}
+                        <h3>${item.title || 'Event Item'}</h3>
+                        <p>${formattedContent}</p>
+                        <button class="action-btn" onclick="auraConcierge.handleFeedAction('${item.action || 'Learn More'}', '${item.type || 'general'}', '${item.url || ''}')">
+                            ${item.action || 'Learn More'}
                         </button>
                     `;
                     this.liveFeed.appendChild(feedItemDiv);
                 });
             }
-            handleFeedAction(action, itemType) {
-                const messageData = {
-                    type: 'action',
-                    action: action,
-                    item_type: itemType
-                };
-                if (this.isConnected) {
-                    this.socket.send(JSON.stringify(messageData));
+            
+            updateUserInfo(userInfo) {
+                console.log('Updating user info:', userInfo);
+                // This can be used to update any user-specific UI elements
+                // For now, just log it since the user info is already in the top banner
+            }
+            
+            handleFeedAction(action, itemType, url = '') {
+                // If there's a URL, open it in a new tab
+                if (url && url !== '' && url !== 'undefined') {
+                    console.log('Opening URL:', url);
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                    
+                    // Also send action to chatbot for tracking
+                    const messageData = {
+                        type: 'action',
+                        action: `Clicked: ${action}`,
+                        item_type: itemType,
+                        url: url
+                    };
+                    
+                    if (this.isConnected) {
+                        this.socket.send(JSON.stringify(messageData));
+                    } else {
+                        this.messageQueue.push(messageData);
+                    }
                 } else {
-                    this.messageQueue.push(messageData);
+                    // No URL, just send the action as a chat message
+                    const messageData = {
+                        type: 'action',
+                        action: action,
+                        item_type: itemType
+                    };
+                    if (this.isConnected) {
+                        this.socket.send(JSON.stringify(messageData));
+                    } else {
+                        this.messageQueue.push(messageData);
+                    }
                 }
             }
             showTypingIndicator() {
@@ -542,8 +819,112 @@
                     this.socket.send(JSON.stringify(message));
                 }
             }
+            
+            startPeriodicUpdates() {
+                // Update live feed every 30 seconds
+                this.feedUpdateInterval = setInterval(() => {
+                    if (this.isConnected) {
+                        this.requestFeedUpdate();
+                    }
+                }, 30000);
+            }
+            
+            requestFeedUpdate() {
+                if (this.isConnected) {
+                    this.socket.send(JSON.stringify({
+                        type: 'get_feed'
+                    }));
+                }
+            }
+            
+            startTypingIndicator() {
+                if (!this.isTyping) {
+                    this.isTyping = true;
+                    if (this.isConnected) {
+                        this.socket.send(JSON.stringify({
+                            type: 'typing_start'
+                        }));
+                    }
+                }
+            }
+            
+            stopTypingIndicator() {
+                if (this.isTyping) {
+                    this.isTyping = false;
+                    if (this.isConnected) {
+                        this.socket.send(JSON.stringify({
+                            type: 'typing_stop'
+                        }));
+                    }
+                }
+            }
+            
+            handleInputTyping() {
+                this.startTypingIndicator();
+                
+                clearTimeout(this.typingTimer);
+                this.typingTimer = setTimeout(() => {
+                    this.stopTypingIndicator();
+                }, 1000);
+            }
+            
+            animateMessageEntry(messageElement) {
+                messageElement.style.opacity = '0';
+                messageElement.style.transform = 'translateY(20px)';
+                
+                this.animationFrameId = requestAnimationFrame(() => {
+                    messageElement.style.transition = 'all 0.3s ease';
+                    messageElement.style.opacity = '1';
+                    messageElement.style.transform = 'translateY(0)';
+                });
+            }
+            
+            playNotificationSound() {
+                // Create a subtle notification sound
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+                    
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                } catch (error) {
+                    // Silently fail if audio context is not available
+                    console.log('Audio notification not available');
+                }
+            }
+            
+            cleanup() {
+                if (this.feedUpdateInterval) {
+                    clearInterval(this.feedUpdateInterval);
+                }
+                if (this.typingTimer) {
+                    clearTimeout(this.typingTimer);
+                }
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                }
+                if (this.socket) {
+                    this.socket.close();
+                }
+            }
         }
+        
         const auraConcierge = new AuraConcierge();
+        
+        // Handle page unload
+        window.addEventListener('beforeunload', () => {
+            auraConcierge.cleanup();
+        });
         // Add CSS animation
         const style = document.createElement('style');
         style.textContent = `

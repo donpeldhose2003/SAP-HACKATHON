@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, monitoring
 
 app_name = 'chat'
 
@@ -16,4 +16,7 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('features/', views.features, name='features'),
     path('test-websocket/', views.test_websocket, name='test_websocket'),
+    # Monitoring endpoints
+    path('health/', monitoring.health_check, name='health_check'),
+    path('metrics/', monitoring.system_metrics, name='system_metrics'),
 ]
